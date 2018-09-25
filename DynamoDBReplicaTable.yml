@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "DynamoDB Global Table Replica Test"
+
+# Organizes How the Parameters appear in the CloudFormation Interface
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+    - Label:
+        default: 'Lambda Utility Parameters'
+      Parameters:
+      - DynamoDBTableName
+
+Parameters:
+  DynamoDBTableName:
+    Description: 'Name to use when creating the DynamoDB Replica table'
+    Type: String
+    Default: 'TestTable'
+    AllowedPattern: '[a-zA-Z0-9_.-]+'
+    MaxLength: 255
+    MinLength: 3
+
+Resources:
+  ExampleTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+          TableName: !Ref DynamoDBTableName
+          AttributeDefinitions:
+              -
+                  AttributeName: ExKey
+                  AttributeType: S
+          KeySchema:
+              -
+                  AttributeName: ExKey
+                  KeyType: HASH
+          ProvisionedThroughput:
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
+          StreamSpecification:
+            StreamViewType: NEW_AND_OLD_IMAGES
